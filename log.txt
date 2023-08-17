@@ -1,0 +1,17 @@
+10/08/2023  :
+    topic selection and disscution
+    topic : Student Data Management System
+
+    group members :
+        Jeevan T R 2101131280
+        Jinix V Nixon 2101131281
+        Joel Joseph C T 2101131282
+        Junaid P S 2101131283
+        Kavya K R 2101131284
+        Manikandan P B 2101131285
+        
+
+17/08/2023  :
+    system prepartion and github repository creation
+    repositary available @ https://github.com/Joelthobias/MajorProject
+    installed required applications vscode , postman , mongodb compass
