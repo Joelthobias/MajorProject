@@ -2,6 +2,13 @@
     topic selection and disscution
     topic : Student Data Management System
 
+    Technologies Using :
+        Node.js Express.js 
+
+    DataBase :
+        MongoDB
+    
+
     group members :
         Jeevan T R 2101131280
         Jinix V Nixon 2101131281
@@ -9,9 +16,21 @@
         Junaid P S 2101131283
         Kavya K R 2101131284
         Manikandan P B 2101131285
-        
+
 
 17/08/2023  :
     system prepartion and github repository creation
-    repositary available @ https://github.com/Joelthobias/MajorProject
+
+    Github Repository   :
+        https://github.com/Joelthobias/MajorProjectxzw 
+
     installed required applications vscode , postman , mongodb compass
+
+15/09/2023  :
+    installed nodejs and npm
+    setting up app.js and server.js
+
+
+05/10/2023  :
+    creating project presentation
+    link : https://docs.google.com/presentation/d/1Z0eeQYkMiTFzxw8lUlMkvjXgMswBd0xU80-7HvRyIYw/edit#slide=id.g28842acc239_2_48
