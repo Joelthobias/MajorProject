@@ -1,12 +1,11 @@
 const app = require('./app');
 const mongoose = require('mongoose');
-const dotenv = require('dotenv');
 
-dotenv.config({path: './config.env'});
+const dotenv = require('dotenv');
+dotenv.config();
 
 const port = 4040;
 const DB = process.env.DB_URL.replace('<password>', process.env.DB_PASSWORD);
-
 mongoose.connect(DB, {
     useNewUrlParser: true,
     useCreateIndex: true,
