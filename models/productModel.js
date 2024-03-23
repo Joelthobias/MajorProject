@@ -23,6 +23,11 @@ const prodcutSchema = new Schema({
     price: {
         type: Number,
         required: [true, 'A product must have Price.'],
+    },
+    quantity:{
+        type:Number,
+        default:0,
+        min:[0,'quantity cant be negative']
     }
 }, { timestamps: true })
 

@@ -58,3 +58,88 @@ exports.getAllProducts = async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 };
+
+// Update a product by ID
+exports.updateProduct = async (req, res) => {
+    try {
+        const { title, price, productID } = req.body;
+        const productId = req.params.id; // Get the product ID from request params
+
+        // Find the product by ID and update its fields
+        const product = await Product.findOneAndUpdate({ 'productID': productId }, { title, price, productID }, { new: true });
+
+        // Check if product exists
+        if (!product) {
+            return res.status(404).json({ error: 'Product not found' });
+        }
+
+        // Send updated product as response
+        res.status(200).json({ product });
+    } catch (error) {
+        console.error('Update product error:', error.message);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+// Delete a product by ID
+exports.deleteProduct = async (req, res) => {
+    try {
+        const productId = req.params.id; // Get the product ID from request params
+
+        // Find the product by ID and delete it
+        const product = await Product.findOneAndDelete({ 'productID': productId });
+
+        // Check if product exists
+        if (!product) {
+            return res.status(404).json({ error: 'Product not found' });
+        }
+
+        // Send success message as response
+        res.status(200).json({ message: 'Product deleted successfully' });
+    } catch (error) {
+        console.error('Delete product error:', error.message);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+// Get a single product by ID
+exports.getProductById = async (req, res) => {
+    try {
+        const productId = req.params.id; // Get the product ID from request params
+        console.log(productId);
+
+        // Find the product by ID
+        const product = await Product.findOne({'productID':productId})
+
+        // Check if product exists
+        if (!product) {
+            return res.status(404).json({ error: 'Product not found' });
+        }
+
+        // Send product details as response
+        res.status(200).json({ product });
+    } catch (error) {
+        console.error('Get product by ID error:', error.message);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+// Update product quantity by ID
+exports.updateProductQuantity = async (req, res) => {
+    try {
+        const { quantity } = req.body;
+        const productId = req.params.id; // Get the product ID from request params
+
+        // Find the product by ID and update its quantity
+        const product = await Product.findByIdAndUpdate(productId, { quantity }, { new: true });
+
+        // Check if product exists
+        if (!product) {
+            return res.status(404).json({ error: 'Product not found' });
+        }
+
+        // Send updated product as response
+        res.status(200).json({ product });
+    } catch (error) {
+        console.error('Update product quantity error:', error.message);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+

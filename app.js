@@ -19,13 +19,10 @@ app.set('view engine', 'hbs');
 
 // Security - HTTPS header
 app.use(helmet());
-app.use(helmet());
 
-app.use((req, res, next) => {
-    res.removeHeader("Cross-Origin-Embedder-Policy");
-    next();
-});
-const mainRouter=require('./routes/index');
+
+const AdminRouter = require('./routes/adminRouter');
+const userRouter = require('./routes/userRouter');
 app.use(fileUpload());
 app.use(cors({ origin: 'http://localhost:3000' }));
 
@@ -46,7 +43,8 @@ app.use(mongoSanitize());
 // Data sanitization against XSS
 app.use(xss());
 
-app.use('/', mainRouter);
+app.use('/', userRouter);
+app.use('/admin', AdminRouter);
 
 app.all('*', (req, res, next) => {
     next(new AppError(`Can't find ${
