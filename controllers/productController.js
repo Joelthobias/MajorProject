@@ -1,17 +1,19 @@
 const Cart = require('../models/CartModel');
 const Product = require('../models/productModel');
+const Order = require('../models/OrderSchema');
 
 // Function to add product to cart
-exports.addProductToCart = async (userId, productId, quantity) => {
+exports.addProductToCart = async (userId, productID, quantity) => {
     try {
-        const product = await Product.findById(productId);
+        const product = await Product.findOne({productID});
         if (!product) {
+            console.log('not found');
             throw new Error('Product not found');
         }
 
         const totalPrice = product.price * quantity;
         const cartItem = {
-            product: productId,
+            product: productID,
             quantity,
             totalPrice
         };
@@ -39,9 +41,9 @@ exports.addProductToCart = async (userId, productId, quantity) => {
 };
 
 // Function to remove product from cart
-exports.removeProductFromCart = async (userId, productId) => {
+exports.removeProductFromCart = async (userID, productId) => {
     try {
-        let cart = await Cart.findOne({ user: userId });
+        let cart = await Cart.findOne({ userID});
         if (!cart) {
             throw new Error('Cart not found');
         }
@@ -91,11 +93,13 @@ exports.createOrder = async (userId) => {
 
 // Controller function to add product to cart
 exports.addToCart = async (req, res) => {
+    console.log(req.body);
     try {
         const { userId, productId, quantity } = req.body;
         const cart = await this.addProductToCart(userId, productId, quantity);
         res.status(201).json({ success: true, cart });
     } catch (error) {
+        console.error('Error adding product to cart:', error);
         res.status(400).json({ success: false, message: error.message });
     }
 };
@@ -107,6 +111,7 @@ exports.removeFromCart = async (req, res) => {
         const cart = await this.removeProductFromCart(userId, productId);
         res.status(200).json({ success: true, cart });
     } catch (error) {
+        console.error('Error removing product from cart:', error);
         res.status(400).json({ success: false, message: error.message });
     }
 };
@@ -118,6 +123,7 @@ exports.placeOrder = async (req, res) => {
         const order = await this.createOrder(userId);
         res.status(201).json({ success: true, order });
     } catch (error) {
+        console.error('Error placing order:', error);
         res.status(400).json({ success: false, message: error.message });
     }
 };
