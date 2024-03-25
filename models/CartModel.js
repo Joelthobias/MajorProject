@@ -10,7 +10,7 @@ const cartSchema = new Schema({
     products: [
         {
             product: {
-                type: String,
+                type: Number,
                 ref: 'Product',
                 required: true
             },

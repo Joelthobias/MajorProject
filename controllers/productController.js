@@ -2,18 +2,31 @@ const Cart = require('../models/CartModel');
 const Product = require('../models/productModel');
 const Order = require('../models/OrderSchema');
 
-// Function to add product to cart
-exports.addProductToCart = async (userId, productID, quantity) => {
+exports.viewCart = async (req, res) => {
     try {
-        const product = await Product.findOne({productID});
+        const userId = req.query.userId; // Assuming userId is passed as a route parameter
+
+        const carts = await Cart.find({ user: userId });
+        console.log(carts); // Check the fetched carts
+        res.status(200).json({ success: true, carts });
+    } catch (error) {
+        console.error('Error fetching carts:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch carts' });
+    }
+}
+
+// Function to add product to cart
+exports.addProductToCart = async (userId, productId, quantity) => {
+    try {
+        productId = parseInt(productId);
+        const product = await Product.findOne({ productID: productId });
         if (!product) {
-            console.log('not found');
             throw new Error('Product not found');
         }
 
         const totalPrice = product.price * quantity;
         const cartItem = {
-            product: productID,
+            product: productId,
             quantity,
             totalPrice
         };
@@ -28,9 +41,20 @@ exports.addProductToCart = async (userId, productID, quantity) => {
                 totalPrice
             });
         } else {
-            cart.products.push(cartItem);
-            cart.totalQuantity += quantity;
-            cart.totalPrice += totalPrice;
+            // Check if the product already exists in the cart
+            const existingProductIndex = cart.products.findIndex(item => item.product === productId);
+            if (existingProductIndex !== -1) {
+                // If product already exists, update its quantity and total price
+                cart.products[existingProductIndex].quantity += quantity;
+                cart.products[existingProductIndex].totalPrice += totalPrice;
+                cart.totalQuantity += quantity;
+                cart.totalPrice += totalPrice;
+            } else {
+                // If product does not exist, add it to the cart
+                cart.products.push(cartItem);
+                cart.totalQuantity += quantity;
+                cart.totalPrice += totalPrice;
+            }
         }
 
         await cart.save();
@@ -40,15 +64,18 @@ exports.addProductToCart = async (userId, productID, quantity) => {
     }
 };
 
+
 // Function to remove product from cart
-exports.removeProductFromCart = async (userID, productId) => {
+exports.removeProductFromCart = async (userID, productID) => {
+    productID = parseInt(productID)
+
     try {
         let cart = await Cart.findOne({ userID});
         if (!cart) {
             throw new Error('Cart not found');
         }
 
-        const index = cart.products.findIndex(item => item.product === productId);
+        const index = cart.products.findIndex(item => item.product === productID);
         if (index === -1) {
             throw new Error('Product not found in cart');
         }

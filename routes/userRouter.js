@@ -11,10 +11,10 @@ router.get('/product/:id', mainController.getProductById);
 // Add product to cart
 router.post('/add-to-cart', ProductController.addToCart);
 // Create order
-router.post('/create-order', ProductController.createOrder);
+router.post('/create-order', ProductController.placeOrder);
 // removing product from cart
 router.get('/remove-from-cart', ProductController.removeFromCart);
-
+router.get('/cart',ProductController.viewCart)
 router.post('/login', login);
 router.post('/signup', signup);
 module.exports = router;
