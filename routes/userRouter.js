@@ -12,6 +12,7 @@ router.get('/product/:id', mainController.getProductById);
 router.post('/add-to-cart', ProductController.addToCart);
 // Create order
 router.post('/create-order', ProductController.placeOrder);
+router.get('/orders', ProductController.getAllOrders);
 // removing product from cart
 router.get('/remove-from-cart', ProductController.removeFromCart);
 router.get('/cart',ProductController.viewCart)

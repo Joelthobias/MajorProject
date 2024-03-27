@@ -6,7 +6,11 @@ exports.viewCart = async (req, res) => {
     try {
         const userId = req.query.userId; // Assuming userId is passed as a route parameter
 
-        const carts = await Cart.find({ user: userId });
+        const carts = await Cart.findOne({ user: userId }).populate({
+                path: 'products.product', // Populate the 'product' field of each product in the 'products' array
+                model: Product, // Model to use for population
+                select: 'title img price' // Specify which fields to include in the populated result
+            });
         console.log(carts); // Check the fetched carts
         res.status(200).json({ success: true, carts });
     } catch (error) {
@@ -18,15 +22,16 @@ exports.viewCart = async (req, res) => {
 // Function to add product to cart
 exports.addProductToCart = async (userId, productId, quantity) => {
     try {
-        productId = parseInt(productId);
-        const product = await Product.findOne({ productID: productId });
+        console.log(userId, productId, quantity);
+        const product = await Product.findById(productId);
         if (!product) {
             throw new Error('Product not found');
         }
-
+        console.log(product);
         const totalPrice = product.price * quantity;
         const cartItem = {
-            product: productId,
+            id: product.productID,
+            product: product._id,
             quantity,
             totalPrice
         };
@@ -42,11 +47,11 @@ exports.addProductToCart = async (userId, productId, quantity) => {
             });
         } else {
             // Check if the product already exists in the cart
-            const existingProductIndex = cart.products.findIndex(item => item.product === productId);
-            if (existingProductIndex !== -1) {
+            const existingProduct = cart.products.find(item => item.product.toString() === productId);
+            if (existingProduct) {
                 // If product already exists, update its quantity and total price
-                cart.products[existingProductIndex].quantity += quantity;
-                cart.products[existingProductIndex].totalPrice += totalPrice;
+                existingProduct.quantity += quantity;
+                existingProduct.totalPrice += totalPrice;
                 cart.totalQuantity += quantity;
                 cart.totalPrice += totalPrice;
             } else {
@@ -65,23 +70,23 @@ exports.addProductToCart = async (userId, productId, quantity) => {
 };
 
 
+
 // Function to remove product from cart
 exports.removeProductFromCart = async (userID, productID) => {
-    productID = parseInt(productID)
-
     try {
-        let cart = await Cart.findOne({ userID});
+        let cart = await Cart.findOne({'user': userID });
+        console.log(cart);
         if (!cart) {
             throw new Error('Cart not found');
         }
 
-        const index = cart.products.findIndex(item => item.product === productID);
-        if (index === -1) {
+        const productIndex = cart.products.findIndex(item => item.product.toString() === productID);
+        if (productIndex === -1) {
             throw new Error('Product not found in cart');
         }
 
-        const product = cart.products[index];
-        cart.products.splice(index, 1);
+        const product = cart.products[productIndex];
+        cart.products.splice(productIndex, 1);
         cart.totalQuantity -= product.quantity;
         cart.totalPrice -= product.totalPrice;
 
@@ -91,6 +96,7 @@ exports.removeProductFromCart = async (userID, productID) => {
         throw new Error(`Failed to remove product from cart: ${error.message}`);
     }
 };
+
 
 // Function to create order from cart
 exports.createOrder = async (userId) => {
@@ -120,7 +126,6 @@ exports.createOrder = async (userId) => {
 
 // Controller function to add product to cart
 exports.addToCart = async (req, res) => {
-    console.log(req.body);
     try {
         const { userId, productId, quantity } = req.body;
         const cart = await this.addProductToCart(userId, productId, quantity);
@@ -134,7 +139,7 @@ exports.addToCart = async (req, res) => {
 // Controller function to remove product from cart
 exports.removeFromCart = async (req, res) => {
     try {
-        const { userId, productId } = req.body;
+        const { userId, productId } = req.query;
         const cart = await this.removeProductFromCart(userId, productId);
         res.status(200).json({ success: true, cart });
     } catch (error) {
@@ -154,3 +159,23 @@ exports.placeOrder = async (req, res) => {
         res.status(400).json({ success: false, message: error.message });
     }
 };
+
+exports.getAllOrders = async (req, res) => {
+    try {
+        const { userId } = req.query;
+        console.log(userId);
+        const order = await Order.find({ user: userId })
+            .populate({
+                path: 'products.product', // Populate the 'product' field of each product in the 'products' array
+                model: Product, // Model to use for population
+                select: 'title img price' // Specify which fields to include in the populated result
+            })
+            .exec();
+        res.status(201).json({ success: true, order });
+    } catch (error) {
+        console.error('Error placing order:', error);
+        res.status(400).json({ success: false, message: error.message });
+    }
+};
+
+
