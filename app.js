@@ -24,7 +24,7 @@ app.use(helmet());
 const AdminRouter = require('./routes/adminRouter');
 const userRouter = require('./routes/userRouter');
 app.use(fileUpload());
-app.use(cors({ origin: 'http://localhost:3000' }));
+app.use(cors({ origin: * }));
 
 // Serving static files
 app.use(express.static(`${__dirname}/public`));
